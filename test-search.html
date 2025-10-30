@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test Search</title>
+</head>
+<body>
+  <h1>Test WESR Search API</h1>
+  <input id="search" type="text" placeholder="Enter search term..." style="width: 400px; padding: 8px;">
+  <button id="btn">Search</button>
+  <div id="results" style="margin-top: 20px; white-space: pre-wrap; font-family: monospace;"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    
+    async function doSearch() {
+      const q = $('search').value.trim();
+      if (!q) return;
+      
+      $('results').textContent = 'Searching...';
+      
+      try {
+        const url = `/api/search?q=${encodeURIComponent(q)}`;
+        console.log('Fetching:', url);
+        
+        const res = await fetch(url);
+        console.log('Response status:', res.status, res.ok);
+        
+        if (!res.ok) {
+          $('results').textContent = `Error: ${res.status} ${res.statusText}`;
+          return;
+        }
+        
+        const data = await res.json();
+        console.log('Data:', data);
+        
+        $('results').textContent = `Found ${data.length} results:\n\n` + JSON.stringify(data, null, 2);
+      } catch (err) {
+        console.error('Error:', err);
+        $('results').textContent = `Error: ${err.message}`;
+      }
+    }
+    
+    $('btn').addEventListener('click', doSearch);
+    $('search').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSearch();
+    });
+    
+    // Auto-test on load
+    setTimeout(() => {
+      $('search').value = 'LOTO';
+      doSearch();
+    }, 1000);
+  </script>
+</body>
+</html>

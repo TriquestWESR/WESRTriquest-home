@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WESR Search Diagnostic</title>
+  <style>
+    body { font-family: system-ui; padding: 20px; max-width: 1200px; margin: 0 auto; }
+    .result { border: 1px solid #ccc; margin: 10px 0; padding: 10px; background: #f9f9f9; }
+    .doc-title { font-weight: bold; color: #0066cc; }
+    .lv-ops { background: #e8f5e9 !important; border-color: #4caf50 !important; }
+    input { width: 400px; padding: 10px; font-size: 16px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #status { margin: 10px 0; font-weight: bold; }
+    .info { background: #e3f2fd; padding: 15px; margin: 15px 0; border-left: 4px solid #2196f3; }
+  </style>
+</head>
+<body>
+  <h1>🔍 WESR Search Diagnostic Tool</h1>
+  
+  <div class="info">
+    <strong>Instructions:</strong><br>
+    1. Make sure your server is running on http://127.0.0.1:8787<br>
+    2. Enter a search term (try "PCEI" or "LOTO")<br>
+    3. Click Search<br>
+    4. Results from <strong>WESR-LV-OPS</strong> will be highlighted in <span style="background:#e8f5e9;padding:2px 6px;">green</span>
+  </div>
+  
+  <div>
+    <input id="search" type="text" placeholder="Search term (e.g., PCEI, LOTO, isolation)" value="PCEI">
+    <button id="btn">Search</button>
+  </div>
+  
+  <div id="status"></div>
+  <div id="results"></div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    
+    async function doSearch() {
+      const q = $('search').value.trim();
+      if (!q) return;
+      
+      $('status').textContent = 'Searching...';
+      $('results').innerHTML = '';
+      
+      try {
+        const url = `/api/search?q=${encodeURIComponent(q)}`;
+        console.log('Fetching:', url);
+        
+        const res = await fetch(url);
+        console.log('Response:', res.status, res.ok);
+        
+        if (!res.ok) {
+          $('status').textContent = `❌ Error: ${res.status} ${res.statusText}`;
+          return;
+        }
+        
+        const data = await res.json();
+        console.log('Data:', data);
+        
+        $('status').innerHTML = `✅ Found <strong>${data.length}</strong> results`;
+        
+        if (data.length === 0) {
+          $('results').innerHTML = '<div class="result">No results found.</div>';
+          return;
+        }
+        
+        // Count by document
+        const byDoc = {};
+        data.forEach(r => {
+          byDoc[r.title] = (byDoc[r.title] || 0) + 1;
+        });
+        
+        // Show document counts
+        const docCounts = Object.entries(byDoc)
+          .map(([title, count]) => {
+            const isLV = title.includes('LV-OPS') || title.includes('LV‑OPS');
+            return `<div style="margin:5px 0;${isLV?'color:#4caf50;font-weight:bold;':''}">${count} from ${title}${isLV?' ← LV-OPS!':''}</div>`;
+          })
+          .join('');
+        
+        $('status').innerHTML += `<div style="margin-top:10px;font-size:14px;font-weight:normal;">${docCounts}</div>`;
+        
+        // Show all results
+        $('results').innerHTML = data.map((r, i) => {
+          const isLV = r.title.includes('LV-OPS') || r.title.includes('LV‑OPS');
+          return `
+            <div class="result ${isLV ? 'lv-ops' : ''}">
+              <strong>${i + 1}.</strong>
+              <span class="doc-title">${r.title}</span>
+              ${r.section ? `— ${r.section}` : ''}
+              ${isLV ? '<strong style="color:#4caf50;"> ← LV-OPS!</strong>' : ''}
+              <div style="font-size:12px;color:#666;margin-top:5px;">${r.snippet}</div>
+            </div>
+          `;
+        }).join('');
+        
+      } catch (err) {
+        console.error('Error:', err);
+        $('status').textContent = `❌ Error: ${err.message}`;
+      }
+    }
+    
+    $('btn').addEventListener('click', doSearch);
+    $('search').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') doSearch();
+    });
+    
+    // Auto-search on load
+    setTimeout(doSearch, 500);
+  </script>
+</body>
+</html>

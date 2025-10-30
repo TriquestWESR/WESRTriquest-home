@@ -1,0 +1,2 @@
+Developer Certificate of Origin (DCO) 1.1
+By contributing, you certify that you wrote the contribution or have the right to submit it; that it is licensed as stated; and that you have the rights to it. Sign-off by adding "Signed-off-by: Name <email>" to each commit.
