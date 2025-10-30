@@ -13,3 +13,21 @@ services:
       # If your /api/ask uses OpenAI, set this in Render dashboard (don’t commit secrets)
       # - key: OPENAI_API_KEY
       #   sync: false
+  - type: web
+    name: wesr-portal-app
+    env: node
+    plan: free
+    rootDir: portal-app
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE
+        sync: false
