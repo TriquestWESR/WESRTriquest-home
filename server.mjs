@@ -67,18 +67,118 @@ app.get('/api/search', (req, res) => {
   res.json(results.map(({ _score, ...rest }) => rest));
 });
 
-// Ask API (if you have OpenAI configured)
+// Ask API with OpenAI
 app.post('/api/ask', async (req, res) => {
-  const { question } = req.body;
-  if (!question) {
-    return res.status(400).json({ error: 'No question provided' });
+  try {
+    const question = (req.body?.question || '').trim();
+    if (!question) return res.status(400).json({ error: 'Empty question' });
+    if (!index.length) return res.status(400).json({ error: 'no-index' });
+
+    // Import OpenAI dynamically
+    const { default: OpenAI } = await import('openai');
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+    // Check if we have embeddings
+    const haveEmbeddings = index[0]?.embedding && Array.isArray(index[0].embedding);
+    
+    let scored = [];
+    if (haveEmbeddings) {
+      // Use semantic search with embeddings
+      const emb = await openai.embeddings.create({ 
+        model: 'text-embedding-3-large', 
+        input: question 
+      });
+      const qvec = emb.data[0].embedding;
+      
+      // Cosine similarity
+      const cosine = (a, b) => {
+        let dot = 0, na = 0, nb = 0;
+        for (let i = 0; i < a.length; i++) { 
+          dot += a[i] * b[i]; 
+          na += a[i] * a[i]; 
+          nb += b[i] * b[i]; 
+        }
+        return dot / (Math.sqrt(na) * Math.sqrt(nb) + 1e-8);
+      };
+      
+      scored = index.map((ch) => ({ ch, score: cosine(qvec, ch.embedding) }))
+                    .sort((a, b) => b.score - a.score)
+                    .slice(0, 8)
+                    .map(x => x.ch);
+    } else {
+      // Lexical fallback (no embeddings)
+      const terms = [...new Set(question.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean))];
+      scored = index.map(ch => {
+        const t = (ch.text || '').toLowerCase();
+        let s = 0;
+        for (const term of terms) if (t.includes(term)) s += 1;
+        return { ch, score: s };
+      }).filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, 8)
+        .map(x => x.ch);
+      
+      if (!scored.length) scored = index.slice(0, 8);
+    }
+
+    // Build context
+    const context = scored.map((c, i) => `【${i + 1}】DOC:${c.title} ${c.version ? `(v${c.version})` : ''} ${c.updated ? `[${c.updated}]` : ''} ${c.section ? `<${c.section}>` : ''}
+URL: ${c.href || '#'}
+TEXT:
+${c.text}`).join('\n\n');
+
+    const system = `You are WESR's rules lexicon assistant. Answer ONLY from the provided CONTEXT.
+- If the answer is not in CONTEXT, say you don't have enough information and point to the Combined Rulebook.
+- Be concise and step-by-step for workflows (e.g., LOTO).
+- ALWAYS cite sources using [1], [2], etc., with links.`;
+
+    const user = `Question: ${question}\n\nCONTEXT:\n${context}`;
+
+    // Call OpenAI
+    let answer = '';
+    try {
+      const completion = await openai.chat.completions.create({
+        model: 'gpt-4o-mini',
+        temperature: 0.2,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user }
+        ]
+      });
+      answer = completion.choices?.[0]?.message?.content?.trim() || '';
+    } catch (err) {
+      const code = err?.code || err?.error?.code;
+      if (code === 'insufficient_quota') {
+        return res.status(402).json({ 
+          error: 'insufficient_quota', 
+          message: 'OpenAI quota exceeded. Build index lexically and view sources; ask is temporarily unavailable.' 
+        });
+      }
+      throw err;
+    }
+
+    if (!answer) answer = 'No answer';
+
+    // Extract citations
+    const citeNums = [...new Set((answer.match(/\[(\d+)\]/g) || [])
+      .map(x => parseInt(x.replace(/\[|\]/g, ''), 10))
+      .filter(n => n >= 1 && n <= scored.length))];
+    
+    const citations = citeNums.map(n => {
+      const c = scored[n - 1];
+      return { 
+        title: c.title, 
+        href: c.href || '#', 
+        label: `${c.title}${c.section ? ` — ${c.section}` : ''}` 
+      };
+    });
+
+    const answerHtml = answer.replace(/\n/g, '<br>');
+    res.json({ answerHtml, citations });
+  } catch (e) {
+    console.error('Ask API error:', e);
+    res.status(500).json({ error: 'ask-failed', message: e.message });
   }
-  
-  // Placeholder - implement your OpenAI logic here if needed
-  res.json({ 
-    answer: 'AI Q&A not yet configured. Please implement OpenAI integration.',
-    answerHtml: '<p>AI Q&A not yet configured. Please implement OpenAI integration.</p>'
-  });
 });
 
 // Health check
