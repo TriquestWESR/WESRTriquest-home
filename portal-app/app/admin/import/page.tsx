@@ -30,12 +30,14 @@ function Importer({ title, downloadTemplate, api, help }:{ title:string; downloa
   const [file,setFile]=useState<File|null>(null)
   const [result,setResult]=useState<any|null>(null)
   const [busy,setBusy]=useState(false)
+  const [dryRun,setDryRun]=useState(true)
 
   async function submit(){
     if(!file) return
     setBusy(true); setResult(null)
     const fd = new FormData(); fd.append('file', file)
-    const res = await fetch(api,{ method:'POST', body: fd })
+    const url = dryRun ? `${api}?dryRun=1` : api
+    const res = await fetch(url,{ method:'POST', body: fd })
     const j = await res.json(); setResult(j); setBusy(false)
   }
 
@@ -43,16 +45,24 @@ function Importer({ title, downloadTemplate, api, help }:{ title:string; downloa
     <Card>
       <H2>{title}</H2>
       <p className="text-sm text-neutral-700 mt-1">{help}</p>
-      <div className="mt-3 flex items-center gap-3">
-  <input aria-label="Upload file" type="file" accept=".csv,.json" onChange={e=>setFile(e.target.files?.[0]||null)} />
+      <div className="mt-3 flex flex-wrap items-center gap-3">
+        <input aria-label="Upload file" type="file" accept=".csv,.json" onChange={e=>setFile(e.target.files?.[0]||null)} />
+        <label className="inline-flex items-center gap-2 text-sm">
+          <input type="checkbox" checked={dryRun} onChange={e=>setDryRun(e.target.checked)} />
+          Validate only (dry run)
+        </label>
         <a className="rounded-xl border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100" href={downloadTemplate}>Download CSV template</a>
-        <Button disabled={!file||busy} onClick={submit}>{busy?'Uploading…':'Upload & import'}</Button>
+        <Button disabled={!file||busy} onClick={submit}>{busy? (dryRun?'Validating…':'Uploading…') : (dryRun?'Validate file':'Upload & import')}</Button>
       </div>
       {result && (
         <div className="mt-3 rounded-xl border border-neutral-200 bg-white/70 p-3">
-          {result.error
-            ? <p className="text-sm text-red-600">Error: {result.error}</p>
-            : <p className="text-sm text-green-700">Imported: {result.inserted} rows. Skipped: {result.skipped||0}.</p>}
+          {result.error ? (
+            <p className="text-sm text-red-600">Error: {result.error}</p>
+          ) : result.validated !== undefined ? (
+            <p className="text-sm text-blue-700">Validated: {result.validated} of {result.total}. No changes made.</p>
+          ) : (
+            <p className="text-sm text-green-700">Imported: {result.inserted} rows. Skipped: {result.skipped||0}.</p>
+          )}
           {result.details && <pre className="mt-2 text-xs bg-white/60 p-3 rounded-lg border border-neutral-200 overflow-x-auto">{JSON.stringify(result.details,null,2)}</pre>}
         </div>
       )}

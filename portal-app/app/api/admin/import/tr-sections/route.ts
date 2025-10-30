@@ -6,6 +6,9 @@ import { TRSectionImportSchema, splitList } from '@/lib/schemas'
 export async function POST(req: NextRequest) {
   const guard = await requireAdmin(req); if (guard instanceof NextResponse) return guard
   const { supa } = guard
+  const dryParam = new URL(req.url).searchParams.get('dryRun')
+  const dryRun = dryParam === '1' || (dryParam || '').toLowerCase() === 'true'
+
   const form = await req.formData()
   const file = form.get('file') as File | null
   if (!file) return NextResponse.json({ error:'no_file' }, { status:400 })
@@ -34,6 +37,10 @@ export async function POST(req: NextRequest) {
     })
   }
   if (valid.length===0) return NextResponse.json({ error:'no_valid_rows', details:errors }, { status:400 })
+
+  if (dryRun) {
+    return NextResponse.json({ validated: valid.length, total: rows.length, details: errors })
+  }
 
   const { error } = await supa.from('tr_sections').upsert(valid, { onConflict: 'id' })
   if (error) return NextResponse.json({ error:error.message }, { status:500 })
