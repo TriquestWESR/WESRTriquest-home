@@ -15,6 +15,21 @@ Production portal built with Next.js + Supabase. Hidden app (no public links fro
 - Build the full Admin CRUD forms, Provider class wizard, and Exam renderer (using the spec docs already in your main site).
 - Add certificate PDF generation + verification endpoint, and Stripe later for billing (current table records usage for monthly invoicing).
 
+## Admin Console setup
+- Add `SUPABASE_SERVICE_ROLE` to `.env` (server-only key from Supabase Settings → API).
+- Apply schema + migrations:
+  ```bash
+  cd portal-app
+  node scripts/db-apply.js
+  ```
+  Copy the output and run it in the Supabase SQL Editor.
+- After sign-in, the login page stores `window.supabaseToken` which admin pages use in their `Authorization: Bearer <token>` headers.
+- All admin API routes (`/api/admin/*`) use `requireAdmin()` guard which verifies the token and checks for `WESR_ADMIN` role.
+- Admin pages:
+  - `/admin/config` - Edit pass threshold, expiry, difficulty mix, disciplines, role tags
+  - `/admin/tr-sections` - CRUD for TR sections (create, retire/unretire, version, question counts)
+  - `/admin/providers` - Create/disable providers, assign roles to users by email
+
 ## IMPORTANT
 - Do NOT add any links from the existing public pages. This app stands alone in /portal-app.
 - Keep robots noindex by default (set in layout metadata).

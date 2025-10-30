@@ -1,84 +1,89 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Card, H1, H2, Button, Muted } from '@/components/ui'
 
-export default function AdminConfigPage() {
-  const [config, setConfig] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
-  const [msg, setMsg] = useState<string | null>(null)
+export default function Page(){
+  const [loading,setLoading]=useState(true)
+  const [cfg,setCfg]=useState<any>(null)
+  const [disc,setDisc]=useState<string>('')
+  const [role,setRole]=useState<string>('')
 
-  useEffect(() => {
-    fetch('/api/admin/config')
-      .then(r => r.json())
-      .then(data => { setConfig(data); setLoading(false) })
-      .catch(() => setLoading(false))
-  }, [])
+  useEffect(()=>{(async()=>{
+    const res = await fetch('/api/admin/config',{headers:auth()})
+    const j=await res.json()
+    setCfg(j)
+    setLoading(false)
+  })()},[])
 
-  const handleSave = async () => {
-    setMsg(null)
-    const res = await fetch('/api/admin/config', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(config)
-    })
-    if (res.ok) setMsg('✅ Saved')
-    else setMsg('❌ Error saving')
+  function auth(){ const t=(window as any).supabaseToken||''; return {'authorization':'Bearer '+t} }
+
+  async function save(){
+    setLoading(true)
+    await fetch('/api/admin/config',{method:'PUT', headers:{'content-type':'application/json',...auth()}, body:JSON.stringify(cfg)})
+    setLoading(false)
   }
 
-  if (loading) return <main className="max-w-4xl mx-auto px-4 py-10"><p>Loading...</p></main>
+  if(loading) return <main className="max-w-4xl mx-auto px-4 py-10"><H1>Admin Config</H1><Muted>Loading…</Muted></main>
 
   return (
     <main className="max-w-4xl mx-auto px-4 py-10">
-      <H1>Admin Configuration</H1>
-      <Muted className="mt-2">Edit pass threshold, expiry, difficulty mix, disciplines, and role tags.</Muted>
-      
-      <Card className="mt-6">
-        <H2>Pass Threshold</H2>
-        <input
-          type="number"
-          step="0.01"
-          className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2"
-          value={config?.pass_threshold || 0.8}
-          onChange={e => setConfig({ ...config, pass_threshold: parseFloat(e.target.value) })}
-        />
-        
-        <H2 className="mt-6">Expiry (months)</H2>
-        <input
-          type="number"
-          className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2"
-          value={config?.expiry_months || 24}
-          onChange={e => setConfig({ ...config, expiry_months: parseInt(e.target.value) })}
-        />
-        
-        <H2 className="mt-6">Difficulty Mix (JSON)</H2>
-        <textarea
-          className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2"
-          rows={3}
-          value={JSON.stringify(config?.difficulty_mix || { easy: 0.6, medium: 0.3, hard: 0.1 }, null, 2)}
-          onChange={e => {
-            try {
-              setConfig({ ...config, difficulty_mix: JSON.parse(e.target.value) })
-            } catch {}
-          }}
-        />
-        
-        <H2 className="mt-6">Disciplines (comma-separated)</H2>
-        <input
-          className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2"
-          value={(config?.disciplines || []).join(', ')}
-          onChange={e => setConfig({ ...config, disciplines: e.target.value.split(',').map(s => s.trim()) })}
-        />
-        
-        <H2 className="mt-6">Role Tags (comma-separated)</H2>
-        <input
-          className="mt-2 w-full rounded-xl border border-neutral-300 px-3 py-2"
-          value={(config?.role_tags || []).join(', ')}
-          onChange={e => setConfig({ ...config, role_tags: e.target.value.split(',').map(s => s.trim()) })}
-        />
-        
-        <Button className="mt-6" onClick={handleSave}>Save Configuration</Button>
-        {msg && <p className="mt-2 text-sm text-neutral-700">{msg}</p>}
+      <H1>Admin Config</H1>
+      <Muted className="mt-2">Edit global settings: locked difficulty mix, pass threshold, expiry, and the editable sets for disciplines & roles.</Muted>
+
+      <Card>
+        <H2>Thresholds & difficulty (locked)</H2>
+        <div className="grid sm:grid-cols-2 gap-4 mt-2">
+          <label className="text-sm">Pass threshold (%)
+            <input type="number" step="1" min="50" max="100"
+              className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2"
+              value={Math.round((cfg.pass_threshold??0.80)*100)}
+              onChange={e=>setCfg({...cfg, pass_threshold: Number(e.target.value)/100})}/>
+          </label>
+          <label className="text-sm">Expiry (months)
+            <input type="number" min="1" className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2"
+              value={cfg.expiry_months||24} onChange={e=>setCfg({...cfg, expiry_months:Number(e.target.value)})}/>
+          </label>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4 mt-3">
+          {['easy','medium','hard'].map(k=>(
+            <label key={k} className="text-sm capitalize">{k}
+              <input type="number" step="1" min="0" max="100"
+                className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2"
+                value={Math.round((cfg.difficulty_mix?.[k]??0)*100)}
+                onChange={e=>setCfg({...cfg, difficulty_mix:{...cfg.difficulty_mix,[k]:Number(e.target.value)/100}})}/>
+            </label>
+          ))}
+        </div>
+        <Button className="mt-4" onClick={save}>Save</Button>
       </Card>
+
+      <div className="grid md:grid-cols-2 gap-6 mt-8">
+        <Card>
+          <H2>Disciplines</H2>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {(cfg.disciplines||[]).map((d:string,i:number)=>(
+              <span key={i} className="rounded-xl border border-neutral-300 px-3 py-1.5">{d}</span>
+            ))}
+          </div>
+          <div className="mt-3 flex gap-2">
+            <input className="rounded-xl border border-neutral-300 px-3 py-2" placeholder="Add discipline" value={disc} onChange={e=>setDisc(e.target.value)}/>
+            <Button onClick={()=>{ if(disc){ setCfg({...cfg, disciplines:[...cfg.disciplines, disc]}); setDisc('') }}}>Add</Button>
+          </div>
+        </Card>
+
+        <Card>
+          <H2>Roles</H2>
+          <div className="flex flex-wrap gap-2 mt-2">
+            {(cfg.role_tags||[]).map((r:string,i:number)=>(
+              <span key={i} className="rounded-xl border border-neutral-300 px-3 py-1.5">{r}</span>
+            ))}
+          </div>
+          <div className="mt-3 flex gap-2">
+            <input className="rounded-xl border border-neutral-300 px-3 py-2" placeholder="Add role" value={role} onChange={e=>setRole(e.target.value)}/>
+            <Button onClick={()=>{ if(role){ setCfg({...cfg, role_tags:[...cfg.role_tags, role]}); setRole('') }}}>Add</Button>
+          </div>
+        </Card>
+      </div>
     </main>
   )
 }

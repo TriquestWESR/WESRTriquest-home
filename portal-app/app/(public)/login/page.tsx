@@ -21,6 +21,11 @@ export default function Page(){
           onClick={async()=>{
             const { error } = await signIn(email, password)
             if (error) return setMsg(error.message)
+            
+            // Store access token on window for admin API calls
+            const { data: { session } } = await supabase.auth.getSession()
+            ;(window as any).supabaseToken = session?.access_token || ''
+            
             // fetch role and route accordingly
             const user = await getUser()
             let dest = '/provider'

@@ -5,17 +5,23 @@ export default function Page(){
   return (
     <main className="max-w-6xl mx-auto px-4 py-10">
       <H1>WESR Admin Console</H1>
-      <Muted className="mt-2">Edit disciplines, roles, TR sections, locked difficulty mix, question counts, and expiry settings. Admin creates/removes providers and assigns roles.</Muted>
+      <Muted className="mt-2">Manage TR Sections, global config, providers, and roles.</Muted>
       <div className="mt-8 grid md:grid-cols-3 gap-6">
-        <Link href="/admin/config">
-          <Card><H2>Configuration</H2><p className="text-sm text-neutral-700 mt-2">Pass threshold, expiry, difficulty mix, disciplines, role tags.</p></Card>
-        </Link>
-        <Link href="/admin/sections">
-          <Card><H2>TR Sections</H2><p className="text-sm text-neutral-700 mt-2">Catalog with versions, question counts, tags.</p></Card>
-        </Link>
-        <Link href="/admin/providers">
-          <Card><H2>Providers & billing</H2><p className="text-sm text-neutral-700 mt-2">Create providers, view usage (per participant per class), manage status.</p></Card>
-        </Link>
+        <Card>
+          <H2>Disciplines & Roles (Config)</H2>
+          <p className="text-sm text-neutral-700 mt-2">Edit discipline/role sets, difficulty mix, pass threshold, expiry.</p>
+          <Link className="underline text-sm mt-2 inline-block" href="/admin/config">Open config</Link>
+        </Card>
+        <Card>
+          <H2>TR Sections</H2>
+          <p className="text-sm text-neutral-700 mt-2">Create, edit, retire/unretire; set counts, versions, tags.</p>
+          <Link className="underline text-sm mt-2 inline-block" href="/admin/tr-sections">Manage TR sections</Link>
+        </Card>
+        <Card>
+          <H2>Providers & Roles</H2>
+          <p className="text-sm text-neutral-700 mt-2">Create/disable providers and assign roles to user emails.</p>
+          <Link className="underline text-sm mt-2 inline-block" href="/admin/providers">Manage providers</Link>
+        </Card>
       </div>
     </main>
   )
