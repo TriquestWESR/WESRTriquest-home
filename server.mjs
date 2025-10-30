@@ -9,11 +9,15 @@ const PUBLIC_DIR = path.resolve(__dirname, 'public');
 const DATA_DIR = path.resolve(__dirname, 'data');
 const INDEX_PATH = path.resolve(DATA_DIR, 'index.json');
 
-// Serve static files from public, assets, and docs
-app.use(express.static(PUBLIC_DIR));
+// Create Express app
+const app = express();
+app.use(express.json());
+
+// Serve static files from root, public, assets, and docs
+app.use(express.static(__dirname));
+app.use('/public', express.static(PUBLIC_DIR));
 app.use('/assets', express.static(path.resolve(__dirname, 'assets')));
 app.use('/docs', express.static(path.resolve(__dirname, 'docs')));
-app.use('/styles.css', express.static(path.resolve(__dirname, 'styles.css')));
 
 // Serve HTML files from root
 app.get('/', (_req, res) => {
@@ -44,23 +48,43 @@ await loadIndex();
 
 // Search API
 app.get('/api/search', (req, res) => {
-  const q = (req.query.q || '').toLowerCase().trim();
+  const qRaw = (req.query.q || '').toString();
+  const q = qRaw.toLowerCase().trim();
   if (!q || q.length < 2) {
-    return res.json({ results: [] });
+    return res.json([]);
   }
   
-  const results = index
-    .filter(chunk => 
-      chunk.text.toLowerCase().includes(q) || 
-      chunk.file.toLowerCase().includes(q)
-    )
-    .map(chunk => ({
-      ...chunk,
-      score: chunk.file.toLowerCase().includes(q) ? 10 : 1
-    }))
-    .sort((a, b) => b.score - a.score);
+  const results = [];
+  for (const chunk of index) {
+    const title = chunk.title || '';
+    const section = chunk.section || '';
+    const text = chunk.text || '';
+    const searchText = `${title} ${section} ${text}`.toLowerCase();
+    
+    if (searchText.includes(q)) {
+      // Score: prioritize title matches
+      const score = title.toLowerCase().includes(q) ? 100 : 1;
+      
+      // Generate snippet
+      const snippetStart = Math.max(0, text.toLowerCase().indexOf(q) - 80);
+      const snippet = text.slice(snippetStart, snippetStart + 240).trim() + '…';
+      
+      results.push({
+        title,
+        section,
+        snippet,
+        href: chunk.href || '#',
+        docId: chunk.docId || '',
+        _score: score
+      });
+    }
+  }
   
-  res.json({ results });
+  // Sort by score, then title
+  results.sort((a, b) => (b._score - a._score) || a.title.localeCompare(b.title));
+  
+  // Return array (frontend expects this)
+  res.json(results.map(({ _score, ...rest }) => rest));
 });
 
 // Ask API (if you have OpenAI configured)
