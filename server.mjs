@@ -2,10 +2,9 @@ import 'dotenv/config';
 import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import fs from 'node:fs/promises';
+import fs from 'node:fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const PUBLIC_DIR = path.resolve(__dirname, 'public');
 const DATA_DIR = path.resolve(__dirname, 'data');
 const INDEX_PATH = path.resolve(DATA_DIR, 'index.json');
 
@@ -13,38 +12,19 @@ const INDEX_PATH = path.resolve(DATA_DIR, 'index.json');
 const app = express();
 app.use(express.json());
 
-// Serve static files from root, public, assets, and docs
+// Serve static files from root directory (serves index.html, styles.css, etc.)
 app.use(express.static(__dirname));
-app.use('/public', express.static(PUBLIC_DIR));
-app.use('/assets', express.static(path.resolve(__dirname, 'assets')));
-app.use('/docs', express.static(path.resolve(__dirname, 'docs')));
 
-// Serve HTML files from root
-app.get('/', (_req, res) => {
-  res.sendFile(path.resolve(__dirname, 'index.html'));
-});
-
-app.get('/files.html', (_req, res) => {
-  res.sendFile(path.resolve(__dirname, 'files.html'));
-});
-
-app.get('/training.html', (_req, res) => {
-  res.sendFile(path.resolve(__dirname, 'training.html'));
-});
-
-// Load index
+// Load index synchronously to avoid top-level await issues
 let index = [];
-async function loadIndex() {
-  try {
-    const txt = await fs.readFile(INDEX_PATH, 'utf8');
-    index = JSON.parse(txt);
-    console.log(`Loaded index with ${index.length} chunks from ${INDEX_PATH}`);
-  } catch (err) {
-    console.error('Failed to load index.json:', err.message);
-    index = [];
-  }
+try {
+  const txt = fs.readFileSync(INDEX_PATH, 'utf8');
+  index = JSON.parse(txt);
+  console.log(`Loaded index with ${index.length} chunks`);
+} catch (err) {
+  console.error('Failed to load index.json:', err.message);
+  index = [];
 }
-await loadIndex();
 
 // Search API
 app.get('/api/search', (req, res) => {
