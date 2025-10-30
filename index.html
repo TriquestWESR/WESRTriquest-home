@@ -257,114 +257,116 @@
     <script src="/public/rules-qa.js?v=3" defer></script>
   </section>
 
-  <section id="governance" class="border-t border-neutral-200 bg-white">
+  <section id="governance" class="border-t border-neutral-200 bg-sky-50">
   <div class="max-w-6xl mx-auto px-4 py-16">
+    <div class="h-0.5 bg-gradient-to-r from-sky-400 via-teal-400 to-sky-400 opacity-40 rounded-full"></div>
     <h2 class="text-2xl md:text-3xl font-bold">Governance & change process</h2>
 
     <!-- Top summary cards -->
     <div class="mt-6 grid md:grid-cols-3 gap-4">
-      <div class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-        <p class="font-semibold">Stewardship</p>
+      <div class="rounded-2xl border border-neutral-200 p-5 bg-white/70 transition-shadow hover:shadow-md">
+        <p class="font-semibold text-sky-700">Stewardship</p>
         <p class="text-sm text-neutral-700 mt-1">WESR Triquest is coordinated by Triquest as a <strong>non-profit steward</strong>. The steward facilitates releases, maintains the repo, and supports the Community Council's decisions.</p>
       </div>
-      <div class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-        <p class="font-semibold">Community Council</p>
+      <div class="rounded-2xl border border-neutral-200 p-5 bg-white/70 transition-shadow hover:shadow-md">
+        <p class="font-semibold text-teal-700">Community Council</p>
         <p class="text-sm text-neutral-700 mt-1">An open council that reviews proposals, evidence and piloting results, and issues formal decisions recorded in the Change of Record.</p>
       </div>
-      <div class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-        <p class="font-semibold">Change Log</p>
-        <p class="text-sm text-neutral-700 mt-1">Each release carries a version, date, scope, and a detailed Change of Record (CoR). See <a class="underline" href="docs/CHANGELOG.txt">CHANGELOG</a>.</p>
+      <div class="rounded-2xl border border-neutral-200 p-5 bg-white/70 transition-shadow hover:shadow-md">
+        <p class="font-semibold text-sky-700">Change Log</p>
+        <p class="text-sm text-neutral-700 mt-1">Each release carries a version, date, scope, and a detailed Change of Record (CoR). See <a class="text-sky-600 hover:text-sky-800 underline" href="docs/CHANGELOG.txt">CHANGELOG</a>.</p>
       </div>
     </div>
 
     <!-- Full governance detail -->
     <div class="mt-10 grid md:grid-cols-3 gap-6">
       <aside class="md:col-span-1">
-        <nav class="text-sm space-y-2">
-          <a href="#gov-licensing" class="block underline">Licensing & IP</a>
-          <a href="#gov-contrib" class="block underline">How to contribute</a>
-          <a href="#gov-decisions" class="block underline">Decision-making</a>
-          <a href="#gov-releases" class="block underline">Releases & versioning</a>
-          <a href="#gov-security" class="block underline">Security & disclosures</a>
-          <a href="#gov-trademarks" class="block underline">Name & trademarks</a>
-          <a href="#gov-roles" class="block underline">Roles & responsibilities</a>
-          <a href="#gov-docs" class="block underline">Governance documents</a>
+        <nav class="rounded-2xl border border-sky-200 bg-white/80 p-4 shadow-sm sticky top-4 text-sm space-y-2">
+          <p class="font-semibold text-sky-700 mb-3">Quick navigation</p>
+          <a href="#gov-licensing" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">Licensing & IP</a>
+          <a href="#gov-contrib" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">How to contribute</a>
+          <a href="#gov-decisions" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">Decision-making</a>
+          <a href="#gov-releases" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">Releases & versioning</a>
+          <a href="#gov-security" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">Security & disclosures</a>
+          <a href="#gov-trademarks" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">Name & trademarks</a>
+          <a href="#gov-roles" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">Roles & responsibilities</a>
+          <a href="#gov-docs" class="block px-3 py-2 rounded-lg hover:bg-sky-50 text-neutral-700 hover:text-sky-700 transition-colors">Governance documents</a>
         </nav>
       </aside>
 
-      <div class="md:col-span-2 space-y-8">
+      <div class="md:col-span-2 space-y-6">
 
-        <section id="gov-licensing" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">Licensing & IP</h3>
-          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-2 space-y-1">
-            <li><strong>Documentation:</strong> Creative Commons <a class="underline" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (attribution required). See <code>docs/LICENSES.txt</code>.</li>
-            <li><strong>Code/examples:</strong> MIT License (permissive). See <code>docs/LICENSES.txt</code>.</li>
-            <li><strong>Contributions:</strong> Accepted under the same outbound licences; contributors attest authorship via <em>Developer Certificate of Origin (DCO)</em>. See <a class="underline" href="docs/DCO.txt">DCO.txt</a>.</li>
+        <section id="gov-licensing" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-sky-700">Licensing & IP</h3>
+          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-3 space-y-2">
+            <li><strong>Documentation:</strong> Creative Commons <a class="text-sky-600 hover:text-sky-800 underline" href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a> (attribution required). See <code class="px-1.5 py-0.5 bg-neutral-100 rounded text-xs">docs/LICENSES.txt</code>.</li>
+            <li><strong>Code/examples:</strong> MIT License (permissive). See <code class="px-1.5 py-0.5 bg-neutral-100 rounded text-xs">docs/LICENSES.txt</code>.</li>
+            <li><strong>Contributions:</strong> Accepted under the same outbound licences; contributors attest authorship via <em>Developer Certificate of Origin (DCO)</em>. See <a class="text-sky-600 hover:text-sky-800 underline" href="docs/DCO.txt">DCO.txt</a>.</li>
           </ul>
         </section>
 
-        <section id="gov-contrib" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">How to contribute</h3>
-          <ol class="list-decimal ml-5 text-sm text-neutral-700 mt-2 space-y-1">
+        <section id="gov-contrib" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-teal-700">How to contribute</h3>
+          <ol class="list-decimal ml-5 text-sm text-neutral-700 mt-3 space-y-2">
             <li><strong>Open an issue</strong> describing the gap/problem, proposed change, and references (standards, field evidence).</li>
             <li><strong>Fork & open a pull request (PR)</strong> with concrete edits (Markdown/RTF/PDF) and a brief impact analysis.</li>
             <li><strong>Respect the Code of Conduct</strong> and include a <em>Sign-off</em> line for the DCO in each commit.</li>
           </ol>
-          <p class="text-sm text-neutral-700 mt-3">Details: <a class="underline" href="docs/CONTRIBUTING.md">CONTRIBUTING.md</a> · <a class="underline" href="docs/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a></p>
+          <p class="text-sm text-neutral-700 mt-4">Details: <a class="text-sky-600 hover:text-sky-800 underline" href="docs/CONTRIBUTING.md">CONTRIBUTING.md</a> · <a class="text-sky-600 hover:text-sky-800 underline" href="docs/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a></p>
         </section>
 
-        <section id="gov-decisions" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">Decision-making</h3>
-          <p class="text-sm text-neutral-700 mt-2">The Community Council applies an <strong>evidence-based</strong> process. After public review the council issues one of: <em>Approve</em>, <em>Approve with changes</em>, or <em>Reject with rationale</em>. The steward implements approved changes.</p>
-          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-2 space-y-1">
+        <section id="gov-decisions" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-sky-700">Decision-making</h3>
+          <p class="text-sm text-neutral-700 mt-3">The Community Council applies an <strong>evidence-based</strong> process. After public review the council issues one of: <em>Approve</em>, <em>Approve with changes</em>, or <em>Reject with rationale</em>. The steward implements approved changes.</p>
+          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-3 space-y-2">
             <li><strong>Public review:</strong> normally 2–4 weeks (can be shortened for urgent safety fixes).</li>
             <li><strong>Conflict of interest:</strong> council members must declare and recuse where relevant.</li>
-            <li><strong>Transparency:</strong> decisions logged in <a class="underline" href="docs/GOVERNANCE.md">GOVERNANCE.md</a> and the CoR.</li>
+            <li><strong>Transparency:</strong> decisions logged in <a class="text-sky-600 hover:text-sky-800 underline" href="docs/GOVERNANCE.md">GOVERNANCE.md</a> and the CoR.</li>
           </ul>
         </section>
 
-        <section id="gov-releases" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">Releases & versioning</h3>
-          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-2 space-y-1">
-            <li><strong>Versioning:</strong> <code>MAJOR.MINOR.PATCH</code> for documents and form packs (MAJOR = breaking workflow/role change; MINOR = new sections/forms; PATCH = corrections/clarity).</li>
-            <li><strong>Change of Record (CoR):</strong> each release includes scope, rationale, affected docs/forms, and migration notes. See <a class="underline" href="docs/CHANGELOG.txt">CHANGELOG</a>.</li>
+        <section id="gov-releases" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-teal-700">Releases & versioning</h3>
+          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-3 space-y-2">
+            <li><strong>Versioning:</strong> <code class="px-1.5 py-0.5 bg-neutral-100 rounded text-xs">MAJOR.MINOR.PATCH</code> for documents and form packs (MAJOR = breaking workflow/role change; MINOR = new sections/forms; PATCH = corrections/clarity).</li>
+            <li><strong>Change of Record (CoR):</strong> each release includes scope, rationale, affected docs/forms, and migration notes. See <a class="text-sky-600 hover:text-sky-800 underline" href="docs/CHANGELOG.txt">CHANGELOG</a>.</li>
             <li><strong>Release cadence:</strong> monthly batched releases; urgent safety updates at any time.</li>
           </ul>
         </section>
 
-        <section id="gov-security" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">Security & disclosures</h3>
-          <p class="text-sm text-neutral-700 mt-2">Report safety-critical or confidentiality issues privately per <a class="underline" href="docs/SECURITY.md">SECURITY.md</a>. We acknowledge within 5 business days and publish a public notice after remediation when appropriate.</p>
+        <section id="gov-security" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-sky-700">Security & disclosures</h3>
+          <p class="text-sm text-neutral-700 mt-3">Report safety-critical or confidentiality issues privately per <a class="text-sky-600 hover:text-sky-800 underline" href="docs/SECURITY.md">SECURITY.md</a>. We acknowledge within 5 business days and publish a public notice after remediation when appropriate.</p>
         </section>
 
-        <section id="gov-trademarks" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">Name & trademarks</h3>
-          <p class="text-sm text-neutral-700 mt-2">"WESR Triquest" identifies this open, non-profit rule set. Usage must not imply endorsement or exclusivity. See <a class="underline" href="docs/TRADEMARKS.md">TRADEMARKS.md</a>.</p>
+        <section id="gov-trademarks" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-teal-700">Name & trademarks</h3>
+          <p class="text-sm text-neutral-700 mt-3">"WESR Triquest" identifies this open, non-profit rule set. Usage must not imply endorsement or exclusivity. See <a class="text-sky-600 hover:text-sky-800 underline" href="docs/TRADEMARKS.md">TRADEMARKS.md</a>.</p>
         </section>
 
-        <section id="gov-roles" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">Roles & responsibilities</h3>
-          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-2 space-y-1">
+        <section id="gov-roles" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-sky-700">Roles & responsibilities</h3>
+          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-3 space-y-2">
             <li><strong>Steward (Triquest):</strong> runs releases, maintains repo/site, facilitates reviews, ensures CoR quality.</li>
             <li><strong>Community Council:</strong> evaluates proposals, safeguards neutrality, approves/rejects changes.</li>
             <li><strong>Maintainers:</strong> subject-area reviewers for HV/LV/CoHE/Training; triage issues and PRs.</li>
             <li><strong>Contributors:</strong> propose changes and supply evidence (standards, incidents, trials).</li>
           </ul>
-          <p class="text-sm text-neutral-700 mt-3">See <a class="underline" href="docs/MAINTAINERS.md">MAINTAINERS.md</a> for current maintainers and areas.</p>
+          <p class="text-sm text-neutral-700 mt-4">See <a class="text-sky-600 hover:text-sky-800 underline" href="docs/MAINTAINERS.md">MAINTAINERS.md</a> for current maintainers and areas.</p>
         </section>
 
-        <section id="gov-docs" class="rounded-2xl border border-neutral-200 p-5 bg-white/70">
-          <h3 class="font-semibold text-lg">Governance documents</h3>
-          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-2 space-y-1">
-            <li><a class="underline" href="docs/GOVERNANCE.md">GOVERNANCE.md</a> — this model in full</li>
-            <li><a class="underline" href="docs/CONTRIBUTING.md">CONTRIBUTING.md</a> — how to propose changes</li>
-            <li><a class="underline" href="docs/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a> — behavior standards</li>
-            <li><a class="underline" href="docs/SECURITY.md">SECURITY.md</a> — private reporting path</li>
-            <li><a class="underline" href="docs/MAINTAINERS.md">MAINTAINERS.md</a> — steward & reviewers</li>
-            <li><a class="underline" href="docs/TRADEMARKS.md">TRADEMARKS.md</a> — name usage policy</li>
-            <li><a class="underline" href="docs/DCO.txt">DCO.txt</a> — developer certificate of origin</li>
-            <li><a class="underline" href="docs/CHANGELOG.txt">CHANGELOG.txt</a> — release history</li>
-            <li><a class="underline" href="docs/LICENSES.txt">LICENSES.txt</a> — CC BY 4.0 & MIT</li>
+        <section id="gov-docs" class="rounded-2xl border border-sky-200 p-6 bg-white/80 shadow-sm transition-shadow hover:shadow-md">
+          <h3 class="font-semibold text-lg text-teal-700">Governance documents</h3>
+          <ul class="list-disc ml-5 text-sm text-neutral-700 mt-3 space-y-2">
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/GOVERNANCE.md">GOVERNANCE.md</a> — this model in full</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/CONTRIBUTING.md">CONTRIBUTING.md</a> — how to propose changes</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/CODE_OF_CONDUCT.md">CODE_OF_CONDUCT.md</a> — behavior standards</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/SECURITY.md">SECURITY.md</a> — private reporting path</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/MAINTAINERS.md">MAINTAINERS.md</a> — steward & reviewers</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/TRADEMARKS.md">TRADEMARKS.md</a> — name usage policy</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/DCO.txt">DCO.txt</a> — developer certificate of origin</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/CHANGELOG.txt">CHANGELOG.txt</a> — release history</li>
+            <li><a class="text-sky-600 hover:text-sky-800 underline" href="docs/LICENSES.txt">LICENSES.txt</a> — CC BY 4.0 & MIT</li>
           </ul>
         </section>
 
