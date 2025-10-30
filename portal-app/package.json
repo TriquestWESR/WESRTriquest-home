@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "db:push": "node scripts/db-apply.js"
+    "db:push": "node scripts/db-apply.js",
+    "db:sql": "node scripts/db-apply.js",
+    "db:migrate:sql": "node scripts/db-apply-migrations.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
