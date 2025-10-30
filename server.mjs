@@ -3,19 +3,32 @@ import express from 'express';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import fs from 'node:fs/promises';
-import OpenAI from 'openai';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.resolve(__dirname, 'public');
 const DATA_DIR = path.resolve(__dirname, 'data');
 const INDEX_PATH = path.resolve(DATA_DIR, 'index.json');
 
-// Serve static assets
-const app = globalThis.app || express();
-app.use?.(express.json({ limit: '2mb' }));
+// Serve static files from public, assets, and docs
 app.use(express.static(PUBLIC_DIR));
+app.use('/assets', express.static(path.resolve(__dirname, 'assets')));
+app.use('/docs', express.static(path.resolve(__dirname, 'docs')));
+app.use('/styles.css', express.static(path.resolve(__dirname, 'styles.css')));
 
-// Load index (if your server doesn’t already)
+// Serve HTML files from root
+app.get('/', (_req, res) => {
+  res.sendFile(path.resolve(__dirname, 'index.html'));
+});
+
+app.get('/files.html', (_req, res) => {
+  res.sendFile(path.resolve(__dirname, 'files.html'));
+});
+
+app.get('/training.html', (_req, res) => {
+  res.sendFile(path.resolve(__dirname, 'training.html'));
+});
+
+// Load index
 let index = [];
 async function loadIndex() {
   try {
@@ -29,14 +42,47 @@ async function loadIndex() {
 }
 await loadIndex();
 
-// Optional simple health check (for Render)
+// Search API
+app.get('/api/search', (req, res) => {
+  const q = (req.query.q || '').toLowerCase().trim();
+  if (!q || q.length < 2) {
+    return res.json({ results: [] });
+  }
+  
+  const results = index
+    .filter(chunk => 
+      chunk.text.toLowerCase().includes(q) || 
+      chunk.file.toLowerCase().includes(q)
+    )
+    .map(chunk => ({
+      ...chunk,
+      score: chunk.file.toLowerCase().includes(q) ? 10 : 1
+    }))
+    .sort((a, b) => b.score - a.score);
+  
+  res.json({ results });
+});
+
+// Ask API (if you have OpenAI configured)
+app.post('/api/ask', async (req, res) => {
+  const { question } = req.body;
+  if (!question) {
+    return res.status(400).json({ error: 'No question provided' });
+  }
+  
+  // Placeholder - implement your OpenAI logic here if needed
+  res.json({ 
+    answer: 'AI Q&A not yet configured. Please implement OpenAI integration.',
+    answerHtml: '<p>AI Q&A not yet configured. Please implement OpenAI integration.</p>'
+  });
+});
+
+// Health check
 app.get('/health', (_req, res) => res.type('text/plain').send('ok'));
 
-// Listen on Render’s PORT
+// Listen
 const PORT = Number(process.env.PORT || 8787);
 const HOST = '0.0.0.0';
 app.listen(PORT, HOST, () => {
   console.log(`WESR rules server on http://${HOST}:${PORT}`);
 });
-
-export default app;
