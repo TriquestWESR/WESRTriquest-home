@@ -87,6 +87,14 @@ app.get('/health', (_req, res) => res.type('text/plain').send('ok'));
 // Listen
 const PORT = Number(process.env.PORT || 8787);
 const HOST = '0.0.0.0';
+
+console.log(`Starting server on ${HOST}:${PORT}...`);
+console.log(`Static files served from: ${__dirname}`);
+console.log(`Index loaded: ${index.length} chunks`);
+
 app.listen(PORT, HOST, () => {
-  console.log(`WESR rules server on http://${HOST}:${PORT}`);
+  console.log(`✅ WESR rules server live at http://${HOST}:${PORT}`);
+}).on('error', (err) => {
+  console.error('❌ Server failed to start:', err);
+  process.exit(1);
 });
