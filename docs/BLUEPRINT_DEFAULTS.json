@@ -1,0 +1,17 @@
+{
+  "passThreshold": 0.80,
+  "difficultyMixLocked": true,
+  "difficultyMix": { "easy": 0.60, "medium": 0.30, "hard": 0.10 },
+  "questionCounts": {
+    "TR-A": 12,
+    "TR-B": 12,
+    "TR-C": 14,
+    "TR-D": 12,
+    "TR-E": 14,
+    "TR-F": 10,
+    "TR-G": 10,
+    "TR-H": 10
+  },
+  "expiryMonths": 24
+}
+/* NOTE: questionCounts here are placeholders; the real values are set by WESR Admin. */

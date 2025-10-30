@@ -1,0 +1,3 @@
+id,locale,type,prompt,choices,answer_key,section_tags,difficulty,retired
+Q-TR-A-001,en,mcq,"What is the primary purpose of a 4-eyes check?","Ensure independence|Save time|Reduce cost|Skip documentation","0","TR-A",1,false
+Q-TR-A-002,en,multi,"Select valid CoHE verification steps.","Try start|Zero-energy test|Remove LOTO|Identify energy sources","0,1,3","TR-A,TR-B",2,false

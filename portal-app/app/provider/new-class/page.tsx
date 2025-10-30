@@ -44,6 +44,12 @@ export default function Page(){
       const data = await res.json()
       setCode(data.code)
       setMsg('✅ Class created')
+      // Fire-and-forget notify (provider email + audit)
+      fetch('/api/notify/class-created', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: data.code, classId: data.id })
+      }).catch(()=>{})
     } else {
       setMsg('❌ Error creating class')
     }

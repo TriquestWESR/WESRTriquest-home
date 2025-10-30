@@ -1,3 +1,29 @@
+## Participant exam flow
+- Entry: `/portal-app/exam/start` (User ID + Course Code)
+- Blueprint + render: `/portal-app/exam/[code]?uid=<USER_ID>`
+- Results: `/portal-app/results/[code]?uid=<USER_ID>`
+
+## Certificates & Verify
+- Public verify page: `/portal-app/verify/[hash]`
+- Public verify API: `/portal-app/api/certificates/verify/[hash]`
+- PDF download: `/portal-app/api/certificates/[hash]/pdf`
+- Set `NEXT_PUBLIC_PORTAL_BASE` in `.env` so QR codes point to the correct domain.
+- The verify page is public but `noindex` to avoid search engine indexing.
+
+## Bulk importers
+- Admin UI: `/portal-app/admin/import`
+- TR Sections: CSV or JSON → validates against schema; upserts by `id`.
+- Questions: CSV or JSON → validates; `choices` as `A|B|C|D`, `answer_key` indexes are 0-based; `section_tags` as comma list; upserts by `id`.
+- Templates: `/templates/tr_sections.csv`, `/templates/questions.csv`.
+
+## Backups & Retention
+- Set `PG_CONNECTION_STRING` in `.env` (Supabase connection string).
+- Run backups and retention:
+  ```bash
+  # from portal-app/
+  npm run backup:run
+  npm run backup:retain
+  ```
 # WESR Triquest Portal (Admin + Provider + Participant)
 ## What this is
 Production portal built with Next.js + Supabase. Hidden app (no public links from the main site).

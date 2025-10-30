@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>WESR Triquest — Exam Portal</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}</style>
+</head>
+<body class="min-h-screen bg-neutral-50 text-neutral-900">
+  <header class="border-b border-neutral-200 bg-white/80 backdrop-blur">
+    <div class="max-w-3xl mx-auto px-4 py-3">
+      <p class="text-sm text-neutral-600">WESR Triquest — Exam Portal</p>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-10">
+    <h1 class="text-2xl md:text-3xl font-bold">Sign in to your exam</h1>
+    <p class="mt-2 text-neutral-700">Enter your User ID and the Course Code provided by your training provider. This portal is not linked from public pages.</p>
+
+    <form class="mt-6 rounded-2xl border border-neutral-200 p-5 bg-white/70" onsubmit="event.preventDefault(); alert('Demo only — backend not wired.');">
+      <label class="block text-sm font-medium">User ID</label>
+      <input class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2" placeholder="e.g., abc123 or email" required>
+
+      <label class="block text-sm font-medium mt-4">Course Code</label>
+      <input class="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2" placeholder="e.g., WTRQ-HV-29F4" required>
+
+      <button class="mt-5 rounded-2xl px-5 py-3 bg-neutral-900 text-white hover:bg-neutral-800">Start exam</button>
+    </form>
+
+    <p class="mt-4 text-xs text-neutral-500">Privacy: minimal data; this portal is robots-noindex and requires direct access.</p>
+  </main>
+</body>
+</html>

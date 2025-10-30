@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "WESR Triquest Question",
+  "type": "object",
+  "required": ["id", "type", "prompt", "choices", "answer_key", "section_tags", "difficulty", "locale"],
+  "properties": {
+    "id": { "type": "string" },
+    "locale": { "type": "string", "enum": ["en", "da"] },
+    "type": { "type": "string", "enum": ["mcq", "multi", "scenario"] },
+    "prompt": { "type": "string" },
+    "choices": { "type": "array", "items": { "type": "string" }, "minItems": 2 },
+    "answer_key": { "type": "array", "items": { "type": "integer" }, "minItems": 1 },
+    "section_tags": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "difficulty": { "type": "integer", "enum": [1, 2, 3] },
+    "rationale": { "type": "string" },
+    "media_refs": { "type": "array", "items": { "type": "string" } },
+    "valid_from_version": { "type": "string" },
+    "retired": { "type": "boolean", "default": false }
+  }
+}
