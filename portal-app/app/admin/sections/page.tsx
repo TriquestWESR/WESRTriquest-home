@@ -56,7 +56,7 @@ export default function AdminSectionsPage() {
         <input className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2" value={form.roles} onChange={e => setForm({ ...form, roles: e.target.value })} placeholder="HV Operator, PCEI" />
         
         <label className="block text-sm font-medium mt-4">Question Count</label>
-        <input type="number" className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2" value={form.question_count} onChange={e => setForm({ ...form, question_count: parseInt(e.target.value) })} />
+        <input type="number" aria-label="Question Count" placeholder="10" className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2" value={form.question_count} onChange={e => setForm({ ...form, question_count: parseInt(e.target.value) })} />
         
         <Button className="mt-6" onClick={handleSave}>Save Section</Button>
         {msg && <p className="mt-2 text-sm text-neutral-700">{msg}</p>}
