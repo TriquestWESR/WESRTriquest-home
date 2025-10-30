@@ -1,7 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { signIn } from '@/lib/auth-client'
+import { signIn, getUser } from '@/lib/auth-client'
+import { supabase } from '@/lib/supabase'
 import { Button, Card, H1, Muted } from '@/components/ui'
 export default function Page(){
   const router = useRouter()
@@ -20,8 +21,19 @@ export default function Page(){
           onClick={async()=>{
             const { error } = await signIn(email, password)
             if (error) return setMsg(error.message)
-            // success → go to provider dashboard by default
-            router.replace('/provider')
+            // fetch role and route accordingly
+            const user = await getUser()
+            let dest = '/provider'
+            if (user?.id) {
+              const { data } = await supabase
+                .from('roles')
+                .select('role')
+                .eq('user_id', user.id)
+              const roles = (data||[]).map(r=>r.role)
+              if (roles.includes('WESR_ADMIN')) dest = '/admin'
+              else if (roles.includes('PROVIDER') || roles.includes('INSTRUCTOR')) dest = '/provider'
+            }
+            router.replace(dest)
           }}
         >
           {'Sign in'}
