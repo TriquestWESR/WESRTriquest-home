@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
-import crypto from 'crypto'
 
 export async function GET(req: NextRequest) {
-  // List all classes (with provider name joined)
+  // List all providers
   const { data, error } = await supabaseAdmin
-    .from('classes')
-    .select('*, providers(name)')
+    .from('providers')
+    .select('*')
     .order('created_at', { ascending: false })
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
@@ -14,20 +13,12 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  // expects {providerId, selectedSections: string[], disciplines: string[], roles: string[], versionLock: Record<string,string>}
-  const code = 'WTRQ-' + (body.disciplines?.[0]||'GEN').toString().substring(0,3).toUpperCase() + '-' + crypto.randomBytes(2).toString('hex').toUpperCase()
-  
+  // expects {name, status?}
   const { data, error } = await supabaseAdmin
-    .from('classes')
-    .insert({
-      provider_id: body.providerId,
-      code,
-      selected_sections: body.selectedSections,
-      version_lock: body.versionLock
-    })
+    .from('providers')
+    .insert(body)
     .select()
     .single()
-  
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }

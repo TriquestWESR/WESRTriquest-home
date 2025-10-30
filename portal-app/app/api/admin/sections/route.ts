@@ -2,23 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase-admin'
 
 export async function GET(req: NextRequest) {
-  // Fetch current admin_config
+  // List all TR sections
   const { data, error } = await supabaseAdmin
-    .from('admin_config')
+    .from('tr_sections')
     .select('*')
-    .eq('id', true)
-    .single()
+    .order('id')
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
   return NextResponse.json(data)
 }
 
 export async function POST(req: NextRequest) {
   const body = await req.json()
-  // expects {pass_threshold?, expiry_months?, difficulty_mix?, disciplines?, role_tags?}
-  // Upsert single row (id=true)
+  // expects {id, title, version, disciplines, roles, question_count}
   const { data, error } = await supabaseAdmin
-    .from('admin_config')
-    .upsert({ id: true, ...body }, { onConflict: 'id' })
+    .from('tr_sections')
+    .upsert(body, { onConflict: 'id' })
     .select()
     .single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
