@@ -4,9 +4,12 @@ import { useRouter } from 'next/navigation'
 import { signIn, getUser } from '@/lib/auth-client'
 import { supabase } from '@/lib/supabase'
 import { Button, Card, H1, Muted } from '@/components/ui'
+import { useToast } from '@/components/toast'
+import { Spinner } from '@/components/spinner'
 export default function Page(){
   const router = useRouter()
-  const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [msg,setMsg]=useState<string|null>(null)
+  const { success, error: toastError } = useToast()
+  const [email,setEmail]=useState(''); const [password,setPassword]=useState(''); const [busy,setBusy]=useState(false)
   return (
     <main className="max-w-md mx-auto px-4 py-10">
       <H1>Sign in</H1>
@@ -17,15 +20,21 @@ export default function Page(){
         <label className="block text-sm font-medium mt-4">Password</label>
         <input type="password" aria-label="Password" placeholder="Password" className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2" value={password} onChange={e=>setPassword(e.target.value)} />
         <Button
-          className="mt-5"
+          className="mt-5 inline-flex items-center gap-2"
+          disabled={busy}
           onClick={async()=>{
+            // basic validation
+            const emailOk = /.+@.+\..+/.test(email)
+            if (!emailOk) { toastError('Enter a valid email'); return }
+            if (!password) { toastError('Password is required'); return }
+            setBusy(true)
             const { error } = await signIn(email, password)
-            if (error) return setMsg(error.message)
-            
+            if (error) { toastError(error.message || 'Sign-in failed'); setBusy(false); return }
+
             // Store access token on window for admin API calls
             const { data: { session } } = await supabase.auth.getSession()
             ;(window as any).supabaseToken = session?.access_token || ''
-            
+
             // fetch role and route accordingly
             const user = await getUser()
             let dest = '/provider'
@@ -38,12 +47,12 @@ export default function Page(){
               if (roles.includes('WESR_ADMIN')) dest = '/admin'
               else if (roles.includes('PROVIDER') || roles.includes('INSTRUCTOR')) dest = '/provider'
             }
+            success('Signed in')
             router.replace(dest)
           }}
         >
-          {'Sign in'}
+          {busy && <Spinner />}<span>Sign in</span>
         </Button>
-        {msg && <p className="text-sm text-neutral-700 mt-2">{msg}</p>}
       </Card>
     </main>
   )

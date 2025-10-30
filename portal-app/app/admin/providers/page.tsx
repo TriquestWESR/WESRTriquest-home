@@ -1,27 +1,41 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { Card, H1, H2, Button, Muted } from '@/components/ui'
+import { Spinner } from '@/components/spinner'
+import { useToast } from '@/components/toast'
+import { downloadCSV } from '@/lib/export'
+import { useDebounce } from '@/hooks/use-debounce'
 
 function auth(){ const t=(window as any).supabaseToken||''; return {'authorization':'Bearer '+t,'content-type':'application/json'} }
 
 export default function Page(){
   const [rows,setRows]=useState<any[]>([])
   const [name,setName]=useState('')
+  const [loading,setLoading]=useState(true)
+  const [q,setQ]=useState('')
+  const dq = useDebounce(q, 250)
+  const { success, error } = useToast()
 
   async function load(){ 
+    setLoading(true)
     const res=await fetch('/api/admin/providers',{headers:auth()})
     setRows(await res.json())
+    setLoading(false)
   }
   useEffect(()=>{ load() },[])
 
   async function create(){ 
-    if(!name) return
-    await fetch('/api/admin/providers',{method:'POST', headers:auth(), body:JSON.stringify({name})})
+    if(!name) { error('Provider name required'); return }
+    const res = await fetch('/api/admin/providers',{method:'POST', headers:auth(), body:JSON.stringify({name})})
+    if(!res.ok) { error('Failed to create'); return }
     setName('')
+    success('Provider created')
     load()
   }
   async function setStatus(id:string,status:'active'|'disabled'){ 
-    await fetch('/api/admin/providers/'+id,{method:'PUT', headers:auth(), body:JSON.stringify({status})})
+    const res = await fetch('/api/admin/providers/'+id,{method:'PUT', headers:auth(), body:JSON.stringify({status})})
+    if(!res.ok) { error('Update failed'); return }
+    success('Status updated')
     load()
   }
 
@@ -38,8 +52,13 @@ export default function Page(){
         </div>
       </Card>
 
-      <div className="mt-6 grid md:grid-cols-2 gap-4">
-        {rows.map(p=>(
+      <div className="mt-6 flex items-center gap-3">
+        <input placeholder="Search providers" className="rounded-xl border border-neutral-300 px-3 py-2" value={q} onChange={e=>setQ(e.target.value)} />
+        <button className="rounded-xl border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100" onClick={()=>downloadCSV('providers.csv', rows)}>Export CSV</button>
+      </div>
+
+      <div className="mt-4 grid md:grid-cols-2 gap-4">
+        {loading ? <div className="flex items-center gap-2 text-sm text-neutral-700"><Spinner /><span>Loading…</span></div> : rows.filter(p=>!dq || p.name.toLowerCase().includes(dq.toLowerCase())).map(p=>(
           <Card key={p.id}>
             <div className="flex items-center justify-between">
               <div>
@@ -63,13 +82,13 @@ export default function Page(){
 function RoleAssign(){
   const [email,setEmail]=useState('')
   const [role,setRole]=useState('PROVIDER')
-  const [msg,setMsg]=useState<string|null>(null)
+  const { success, error } = useToast()
   
   async function add(){ 
-    setMsg(null)
     const res=await fetch('/api/admin/roles',{method:'POST', headers:auth(), body:JSON.stringify({email, role})})
     const j=await res.json()
-    setMsg(j.error?('Error: '+j.error):'Role assigned')
+    if (j?.error) error(j.error)
+    else success('Role assigned')
   }
   function auth(){ const t=(window as any).supabaseToken||''; return {'authorization':'Bearer '+t, 'content-type':'application/json'} }
   
@@ -83,7 +102,6 @@ function RoleAssign(){
         </select>
         <button onClick={add} className="rounded-2xl px-5 py-3 bg-neutral-900 text-white hover:bg-neutral-800">Assign</button>
       </div>
-      {msg && <p className="text-sm text-neutral-700 mt-2">{msg}</p>}
     </div>
   )
 }

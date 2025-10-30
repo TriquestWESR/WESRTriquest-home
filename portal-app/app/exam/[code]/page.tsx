@@ -2,6 +2,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, H1, Button } from '@/components/ui'
+import Modal from '@/components/modal'
+import { Spinner } from '@/components/spinner'
+import { useToast } from '@/components/toast'
 
 export default function Page({ params }:{ params:{ code:string } }){
   const { code } = params
@@ -9,6 +12,10 @@ export default function Page({ params }:{ params:{ code:string } }){
   const [blueprint, setBlueprint] = useState<any>(null)
   const [answers, setAnswers] = useState<Record<string, number[]>>({})
   const router = useRouter()
+  const [submitting, setSubmitting] = useState(false)
+  const [showSubmit, setShowSubmit] = useState(false)
+  const [userId, setUserId] = useState('')
+  const { error, success } = useToast()
 
   useEffect(() => {
     if (started && !blueprint) {
@@ -27,19 +34,19 @@ export default function Page({ params }:{ params:{ code:string } }){
       qId,
       selectedIndexes
     }))
-    const userId = prompt('Enter your email or identifier:') || 'anonymous'
-    
-    const res = await fetch('/api/learner/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, userId, answers: answersArray })
-    })
-    
-    if (res.ok) {
-      router.push(`/results/${code}?user=${userId}`)
-    } else {
-      alert('Error submitting exam')
-    }
+    if (!userId) { error('Enter your email or identifier'); return }
+    setSubmitting(true)
+    try{
+      const res = await fetch('/api/learner/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, userId, answers: answersArray })
+      })
+      if (!res.ok) throw new Error('Submit failed')
+      success('Submitted')
+      router.push(`/results/${code}?user=${encodeURIComponent(userId)}`)
+    }catch(e:any){ error(e?.message||'Error submitting exam') }
+    finally{ setSubmitting(false); setShowSubmit(false) }
   }
 
   const toggleAnswer = (qId: string, idx: number, type: string) => {
@@ -85,9 +92,24 @@ export default function Page({ params }:{ params:{ code:string } }){
               </div>
             </Card>
           ))}
-          <Button onClick={handleSubmit}>Submit Exam</Button>
+          <Button onClick={()=>setShowSubmit(true)}>Submit Exam</Button>
         </div>
       )}
+      <SubmitModal open={showSubmit} onClose={()=>setShowSubmit(false)} onSubmit={handleSubmit} value={userId} setValue={setUserId} />
     </main>
+  )
+}
+
+// Modal to capture user identifier
+function SubmitModal({ open, onClose, onSubmit, value, setValue }:{ open:boolean; onClose:()=>void; onSubmit:()=>void; value:string; setValue:(v:string)=>void }){
+  return (
+    <Modal open={open} onClose={onClose} title="Submit exam">
+      <label className="block text-sm font-medium">Your email or identifier</label>
+      <input className="mt-1 w-full rounded-xl border border-neutral-300 px-3 py-2" value={value} onChange={e=>setValue(e.target.value)} placeholder="e.g. user@example.com" />
+      <div className="mt-5 flex justify-end gap-2">
+        <button className="rounded-xl border border-neutral-300 px-3 py-1.5" onClick={onClose}>Cancel</button>
+        <Button onClick={onSubmit} className="inline-flex items-center gap-2">Submit</Button>
+      </div>
+    </Modal>
   )
 }

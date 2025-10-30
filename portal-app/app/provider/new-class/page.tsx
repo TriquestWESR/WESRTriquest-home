@@ -1,6 +1,8 @@
 'use client'
 import { useState, useEffect } from 'react'
 import { Card, H1, H2, Button } from '@/components/ui'
+import { useToast } from '@/components/toast'
+import { Spinner } from '@/components/spinner'
 export default function Page(){
   const [disciplines,setDisc]=useState<string[]>([])
   const [roles,setRoles]=useState<string[]>([])
@@ -8,7 +10,8 @@ export default function Page(){
   const [allSections, setAllSections] = useState<any[]>([])
   const [providerId, setProviderId] = useState('')
   const [code, setCode] = useState<string | null>(null)
-  const [msg, setMsg] = useState<string | null>(null)
+  const [busy, setBusy] = useState(false)
+  const { success, error } = useToast()
 
   useEffect(() => {
     fetch('/api/admin/sections').then(r => r.json()).then(setAllSections)
@@ -22,13 +25,15 @@ export default function Page(){
   )
 
   const handlePublish = async () => {
-    if (!providerId) return setMsg('❌ Provider ID required')
-    setMsg(null)
+    if (!providerId) { error('Provider ID required'); return }
+    if (disciplines.length === 0) { error('Pick at least one discipline'); return }
+    if (roles.length === 0) { error('Pick at least one role'); return }
+    if (sections.length === 0) { error('Select at least one TR section'); return }
     const versionLock = Object.fromEntries(sections.map(sid => {
       const sec = allSections.find(s => s.id === sid)
       return [sid, sec?.version || '1.0.0']
     }))
-    
+    setBusy(true)
     const res = await fetch('/api/provider/classes', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -43,7 +48,7 @@ export default function Page(){
     if (res.ok) {
       const data = await res.json()
       setCode(data.code)
-      setMsg('✅ Class created')
+      success('Class created')
       // Fire-and-forget notify (provider email + audit)
       fetch('/api/notify/class-created', {
         method: 'POST',
@@ -51,8 +56,9 @@ export default function Page(){
         body: JSON.stringify({ code: data.code, classId: data.id })
       }).catch(()=>{})
     } else {
-      setMsg('❌ Error creating class')
+      error('Error creating class')
     }
+    setBusy(false)
   }
 
   return (
@@ -91,8 +97,10 @@ export default function Page(){
           ))}
         </div>
         
-        <Button className="mt-5" onClick={handlePublish}>Publish class → generate Course Code</Button>
-        {msg && <p className="mt-2 text-sm text-neutral-700">{msg}</p>}
+        <Button className="mt-5 inline-flex items-center gap-2" onClick={handlePublish} disabled={busy}>
+          {busy && <Spinner />}
+          <span>Publish class → generate Course Code</span>
+        </Button>
         {code && <p className="mt-2 text-lg font-bold">Course Code: {code}</p>}
       </Card>
     </main>

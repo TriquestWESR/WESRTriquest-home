@@ -5,3 +5,5 @@
 :root { --txt: #0a0a0a; --muted:#707070; }
 * { font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
 html, body { background:#f6f6f6; color:var(--txt); }
+.dark html, .dark body { background:#0b0b0b; color:#e5e5e5; }
+.dark .card { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.12); }

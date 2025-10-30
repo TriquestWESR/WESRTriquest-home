@@ -1,6 +1,8 @@
 'use client'
 import { useState } from 'react'
 import { Card, H1, H2, Button, Muted } from '@/components/ui'
+import { useToast } from '@/components/toast'
+import { Spinner } from '@/components/spinner'
 
 export default function Page(){
   return (
@@ -31,14 +33,24 @@ function Importer({ title, downloadTemplate, api, help }:{ title:string; downloa
   const [result,setResult]=useState<any|null>(null)
   const [busy,setBusy]=useState(false)
   const [dryRun,setDryRun]=useState(true)
+  const { success, error } = useToast()
 
   async function submit(){
     if(!file) return
     setBusy(true); setResult(null)
     const fd = new FormData(); fd.append('file', file)
     const url = dryRun ? `${api}?dryRun=1` : api
-    const res = await fetch(url,{ method:'POST', body: fd })
-    const j = await res.json(); setResult(j); setBusy(false)
+    try {
+      const res = await fetch(url,{ method:'POST', body: fd })
+      const j = await res.json(); setResult(j)
+      if (j?.error) error(j.error)
+      else if (j?.validated !== undefined) success(`Validated ${j.validated}/${j.total}`)
+      else success(`Imported ${j?.inserted ?? 0} rows`)
+    } catch (e:any) {
+      error(e?.message || 'Upload failed')
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -52,7 +64,10 @@ function Importer({ title, downloadTemplate, api, help }:{ title:string; downloa
           Validate only (dry run)
         </label>
         <a className="rounded-xl border border-neutral-300 px-3 py-1.5 text-sm hover:bg-neutral-100" href={downloadTemplate}>Download CSV template</a>
-        <Button disabled={!file||busy} onClick={submit}>{busy? (dryRun?'Validating…':'Uploading…') : (dryRun?'Validate file':'Upload & import')}</Button>
+        <Button disabled={!file||busy} onClick={submit} className="inline-flex items-center gap-2">
+          {busy && <Spinner />}
+          <span>{busy? (dryRun?'Validating…':'Uploading…') : (dryRun?'Validate file':'Upload & import')}</span>
+        </Button>
       </div>
       {result && (
         <div className="mt-3 rounded-xl border border-neutral-200 bg-white/70 p-3">
