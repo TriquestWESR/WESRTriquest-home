@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: wesr-triquest-test
+    env: node
+    plan: free
+    buildCommand: npm ci || npm install
+    startCommand: npm start
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # If your /api/ask uses OpenAI, set this in Render dashboard (don’t commit secrets)
+      # - key: OPENAI_API_KEY
+      #   sync: false

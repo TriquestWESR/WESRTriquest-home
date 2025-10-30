@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+  <rect width="160" height="160" fill="none"/>
+  <g stroke="#cbd5e1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.6">
+    <g transform="translate(20,20)">
+      <line x1="0" y1="60" x2="0" y2="120"/>
+      <line x1="0" y1="60" x2="-30" y2="30"/>
+      <line x1="0" y1="60" x2="30" y2="30"/>
+      <line x1="0" y1="60" x2="0" y2="20"/>
+      <circle cx="0" cy="60" r="6" fill="white"/>
+    </g>
+    <g transform="translate(100,80) rotate(20)">
+      <line x1="0" y1="40" x2="0" y2="120"/>
+      <line x1="0" y1="40" x2="-26" y2="14"/>
+      <line x1="0" y1="40" x2="26" y2="14"/>
+      <line x1="0" y1="40" x2="0" y2="6"/>
+      <circle cx="0" cy="40" r="5" fill="white"/>
+    </g>
+  </g>
+</svg>
