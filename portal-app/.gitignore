@@ -1,0 +1,17 @@
+# Node/Next artifacts
+node_modules/
+.next/
+.out/
+dist/
+.next/cache/
+.vercel/
+.turbo/
+
+# Env files (do not commit secrets)
+.env
+.env.*
+
+# OS/editor
+.DS_Store
+Thumbs.db
+*.log
