@@ -19,7 +19,7 @@ export default function NavBar() {
         <Link href="/" className="font-semibold tracking-tight text-neutral-900 dark:text-neutral-100">WESR Portal</Link>
         <nav className="ml-auto flex items-center gap-1">
           {links.map(l => {
-            const active = pathname === l.href || (l.href !== '/' && pathname.startsWith(l.href))
+            const active = pathname && (pathname === l.href || (l.href !== '/' && pathname.startsWith(l.href)))
             return (
               <Link
                 key={l.href}
