@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation'
 
 export default function Breadcrumbs() {
   const pathname = usePathname()
+  if (!pathname) return null
   const parts = pathname.split('/').filter(Boolean)
   const items = [{ href: '/', label: 'Home' }].concat(
     parts.map((p, i) => ({
