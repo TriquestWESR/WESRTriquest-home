@@ -21,10 +21,15 @@ export default function Page(){
 
   async function load(){
     setLoading(true)
-    const url = '/api/admin/tr-sections' + (filterRetired?'?includeRetired=1':'')
-    const res = await fetch(url,{headers:auth()})
-    const j=await res.json()
-    setRows(j)
+    try {
+      const url = '/api/admin/tr-sections' + (filterRetired?'?includeRetired=1':'')
+      const res = await fetch(url,{headers:auth()})
+      const j=await res.json()
+      setRows(Array.isArray(j) ? j : [])
+    } catch (err) {
+      console.error('Failed to load TR sections:', err)
+      setRows([])
+    }
     setLoading(false)
   }
   useEffect(()=>{ load() },[filterRetired])
@@ -46,8 +51,8 @@ export default function Page(){
     try{ await fetch('/api/admin/tr-sections/'+id,{method:'PUT', headers:{'content-type':'application/json',...auth()}, body:JSON.stringify({retired:false})}); success('Unretired'); load() }catch{ error('Failed') }
   }
 
-  const filtered = rows.filter(r => (filterRetired || !r.retired) && (
-    !debouncedQ || r.id.toLowerCase().includes(debouncedQ.toLowerCase()) || r.title.toLowerCase().includes(debouncedQ.toLowerCase())
+  const filtered = (Array.isArray(rows) ? rows : []).filter(r => (filterRetired || !r.retired) && (
+    !debouncedQ || r.id?.toLowerCase().includes(debouncedQ.toLowerCase()) || r.title?.toLowerCase().includes(debouncedQ.toLowerCase())
   ))
   const total = filtered.length
   const totalPages = Math.max(1, Math.ceil(total / pageSize))

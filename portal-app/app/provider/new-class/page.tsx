@@ -14,14 +14,20 @@ export default function Page(){
   const { success, error } = useToast()
 
   useEffect(() => {
-    fetch('/api/admin/sections').then(r => r.json()).then(setAllSections)
+    fetch('/api/admin/sections')
+      .then(r => r.json())
+      .then(data => setAllSections(Array.isArray(data) ? data : []))
+      .catch(err => {
+        console.error('Failed to load sections:', err)
+        setAllSections([])
+      })
     // In real app, fetch current user's provider_id from roles/providers table
     // For now, hardcode or prompt admin to create provider first
   }, [])
 
-  const filteredSections = allSections.filter(s =>
-    disciplines.some(d => s.disciplines.includes(d)) &&
-    roles.some(r => s.roles.includes(r))
+  const filteredSections = (Array.isArray(allSections) ? allSections : []).filter(s =>
+    disciplines.some(d => s.disciplines?.includes(d)) &&
+    roles.some(r => s.roles?.includes(r))
   )
 
   const handlePublish = async () => {

@@ -18,8 +18,14 @@ export default function Page(){
 
   async function load(){ 
     setLoading(true)
-    const res=await fetch('/api/admin/providers',{headers:auth()})
-    setRows(await res.json())
+    try {
+      const res=await fetch('/api/admin/providers',{headers:auth()})
+      const data = await res.json()
+      setRows(Array.isArray(data) ? data : [])
+    } catch (err) {
+      console.error('Failed to load providers:', err)
+      setRows([])
+    }
     setLoading(false)
   }
   useEffect(()=>{ load() },[])
@@ -58,7 +64,7 @@ export default function Page(){
       </div>
 
       <div className="mt-4 grid md:grid-cols-2 gap-4">
-        {loading ? <div className="flex items-center gap-2 text-sm text-neutral-700"><Spinner /><span>Loading…</span></div> : rows.filter(p=>!dq || p.name.toLowerCase().includes(dq.toLowerCase())).map(p=>(
+        {loading ? <div className="flex items-center gap-2 text-sm text-neutral-700"><Spinner /><span>Loading…</span></div> : (Array.isArray(rows) ? rows : []).filter(p=>!dq || p.name?.toLowerCase().includes(dq.toLowerCase())).map(p=>(
           <Card key={p.id}>
             <div className="flex items-center justify-between">
               <div>
