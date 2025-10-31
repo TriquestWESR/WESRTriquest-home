@@ -21,7 +21,7 @@ services:
     buildCommand: npm ci && npm run build
     startCommand: npm start
     autoDeploy: true
-    healthCheckPath: /
+  healthCheckPath: /health
     envVars:
       - key: NODE_ENV
         value: production
