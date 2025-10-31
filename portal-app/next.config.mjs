@@ -7,7 +7,7 @@ const __dirname = path.dirname(__filename)
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  basePath: '/portal-app',
+  // Serve app at root path on the dedicated Render service
   webpack: (config) => {
     config.resolve.alias['@'] = path.resolve(__dirname, './')
     return config
